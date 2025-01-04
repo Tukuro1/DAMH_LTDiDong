@@ -15,16 +15,18 @@ class Auth {
 
   // Đăng ký tài khoản mới
   static Future<Map<String, dynamic>> register({
-    required String username,
-    required String email,
-    required String password,
-
+        required String username,
+        required String email,
+        required String password,
+        String role = 'User', // Thiết lập giá trị mặc định cho role
   }) async {
     // Tạo body để gửi lên API
     Map<String, dynamic> body = {
       "username": username,
       "email": email,
       "password": password,
+      "role": role,
+
 
     };
 
