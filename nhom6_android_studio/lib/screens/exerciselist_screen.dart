@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // Model and API Service Combined
-class Exercise {
+class ExerciselistScreen {
   final int id;
   final String name;
   final String description;
 
-  Exercise({required this.id, required this.name, required this.description});
+  ExerciselistScreen({required this.id, required this.name, required this.description});
 
-  factory Exercise.fromJson(Map<String, dynamic> json) {
-    return Exercise(
+  factory ExerciselistScreen.fromJson(Map<String, dynamic> json) {
+    return ExerciselistScreen(
       id: json['id'],
       name: json['name'],
       description: json['description'],
@@ -30,13 +30,13 @@ class Exercise {
 class ApiService {
   final String baseUrl = "https://smallsageleaf12.conveyor.cloud/api/ExerciseListApi";
 
-  Future<List<Exercise>> getExerciseList() async {
+  Future<List<ExerciselistScreen>> getExerciseList() async {
     try {
       final response = await http.get(Uri.parse(baseUrl));
 
       if (response.statusCode == 200) {
         List<dynamic> data = json.decode(response.body);
-        return data.map((item) => Exercise.fromJson(item)).toList();
+        return data.map((item) => ExerciselistScreen.fromJson(item)).toList();
       } else {
         throw Exception('Failed to load exercise list');
       }
@@ -53,7 +53,7 @@ class ExerciseListScreen extends StatefulWidget {
 }
 
 class _ExerciseListScreenState extends State<ExerciseListScreen> {
-  late Future<List<Exercise>> futureExercises;
+  late Future<List<ExerciselistScreen>> futureExercises;
   final ApiService apiService = ApiService();
 
   @override
@@ -68,7 +68,7 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
       appBar: AppBar(
         title: Text('Exercise List'),
       ),
-      body: FutureBuilder<List<Exercise>>(
+      body: FutureBuilder<List<ExerciselistScreen>>(
         future: futureExercises,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
