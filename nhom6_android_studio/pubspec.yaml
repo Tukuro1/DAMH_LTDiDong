@@ -59,7 +59,7 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon.png"
+  image_path: "assets/muscle_arm.png"
 
 # The following section is specific to Flutter packages.
 flutter:
