@@ -12,15 +12,15 @@ namespace DAMH_LTDD.Repositories
         }
         public async Task<IEnumerable<ExerciseList>> GetExerciseListAsync()
         {
-            return await _context.ExerciseList.ToListAsync();
+            return await _context.ExerciseLists.ToListAsync();
         }
         public async Task<ExerciseList> GetExerciseListByIdAsync(int id)
         {
-            return await _context.ExerciseList.FindAsync(id);
+            return await _context.ExerciseLists.FindAsync(id);
         }
         public async Task AddExerciseListAsync(ExerciseList exerciseList)
         {
-            _context.ExerciseList.Add(exerciseList);
+            _context.ExerciseLists.Add(exerciseList);
             await _context.SaveChangesAsync();
         }
         public async Task UpdateExerciseListAsync(ExerciseList exerciseList)
@@ -30,10 +30,10 @@ namespace DAMH_LTDD.Repositories
         }
         public async Task DeleteExerciseListAsync(int id)
         {
-            var exerciseList = await _context.ExerciseList.FindAsync(id);
+            var exerciseList = await _context.ExerciseLists.FindAsync(id);
             if (exerciseList != null)
             {
-                _context.ExerciseList.Remove(exerciseList);
+                _context.ExerciseLists.Remove(exerciseList);
                 await _context.SaveChangesAsync();
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿
+using System.Text;
 using DAMH_LTDD.Models;
 using DAMH_LTDD.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,8 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddControllers();
 builder.Services.AddScoped<IMealListRepository, MealListRepository>();
 builder.Services.AddScoped<IExerciseListRepository, ExerciseListRepository>();
+builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -23,31 +23,6 @@ namespace DAMH_LTDD.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAMH_LTDD.Models.BodyData", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Date_of_birth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("Height")
-                        .HasColumnType("int");
-
-                    b.Property<float?>("Weight")
-                        .HasColumnType("real");
-
-                    b.Property<bool>("sex")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BodyDatas", "identity");
-                });
-
             modelBuilder.Entity("DAMH_LTDD.Models.CategoryExercise", b =>
                 {
                     b.Property<int>("Id")
@@ -67,7 +42,7 @@ namespace DAMH_LTDD.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryExercise", "identity");
+                    b.ToTable("CategoryExercises", "identity");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.CategoryFood", b =>
@@ -83,23 +58,7 @@ namespace DAMH_LTDD.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CategoryFood", "identity");
-                });
-
-            modelBuilder.Entity("DAMH_LTDD.Models.DaysOfTheWeek", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Day")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DaysOfTheWeeks", "identity");
+                    b.ToTable("CategoryFoods", "identity");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.Exercise", b =>
@@ -138,7 +97,7 @@ namespace DAMH_LTDD.Migrations
 
                     b.HasIndex("CategoryExerciseId");
 
-                    b.ToTable("Exercise", "identity");
+                    b.ToTable("Exercises", "identity");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.ExerciseList", b =>
@@ -149,38 +108,34 @@ namespace DAMH_LTDD.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DaysOfTheWeekId")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("Exercise_Time")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DaysOfTheWeekId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("ExerciseList", "identity");
+                    b.ToTable("ExerciseLists", "identity");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.ExerciseListExercise", b =>
                 {
-                    b.Property<int>("ExerciseListId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ExerciseId")
                         .HasColumnType("int");
 
-                    b.HasKey("ExerciseListId", "ExerciseId");
+                    b.Property<int>("ExerciseListId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ExerciseId");
+                    b.HasKey("ExerciseId", "ExerciseListId");
+
+                    b.HasIndex("ExerciseListId");
 
                     b.ToTable("ExerciseListExercises", "identity");
                 });
@@ -235,41 +190,37 @@ namespace DAMH_LTDD.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DaysOfTheWeekId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Meal_Time")
+                    b.Property<DateTime?>("Meal_Time")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DaysOfTheWeekId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("MealList", "identity");
+                    b.ToTable("MealLists", "identity");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.MealListFood", b =>
                 {
-                    b.Property<int>("MealListId")
-                        .HasColumnType("int");
-
                     b.Property<int>("FoodId")
                         .HasColumnType("int");
 
-                    b.HasKey("MealListId", "FoodId");
+                    b.Property<int>("MealListId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("FoodId");
+                    b.HasKey("FoodId", "MealListId");
+
+                    b.HasIndex("MealListId");
 
                     b.ToTable("MealListFoods", "identity");
                 });
@@ -286,8 +237,8 @@ namespace DAMH_LTDD.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Date_of_birth")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly?>("Date_of_birth")
+                        .HasColumnType("date");
 
                     b.Property<bool?>("Demand")
                         .HasColumnType("bit");
@@ -492,96 +443,84 @@ namespace DAMH_LTDD.Migrations
 
             modelBuilder.Entity("DAMH_LTDD.Models.Exercise", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.CategoryExercise", "CategoryExercise")
-                        .WithMany("Exercise")
+                    b.HasOne("DAMH_LTDD.Models.CategoryExercise", "CategoryExercises")
+                        .WithMany("Exercises")
                         .HasForeignKey("CategoryExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryExercise");
+                    b.Navigation("CategoryExercises");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.ExerciseList", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.DaysOfTheWeek", "DaysOfTheWeek")
-                        .WithMany("ExerciseLists")
-                        .HasForeignKey("DaysOfTheWeekId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DAMH_LTDD.Models.User", "User")
                         .WithMany("ExerciseLists")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("DaysOfTheWeek");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.ExerciseListExercise", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.Exercise", "Exercise")
+                    b.HasOne("DAMH_LTDD.Models.Exercise", "Exercises")
                         .WithMany("ExerciseListExercises")
                         .HasForeignKey("ExerciseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAMH_LTDD.Models.ExerciseList", "ExerciseList")
+                    b.HasOne("DAMH_LTDD.Models.ExerciseList", "ExerciseLists")
                         .WithMany("ExerciseListExercises")
                         .HasForeignKey("ExerciseListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Exercise");
+                    b.Navigation("ExerciseLists");
 
-                    b.Navigation("ExerciseList");
+                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.Food", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.CategoryFood", "CategoryFood")
+                    b.HasOne("DAMH_LTDD.Models.CategoryFood", "CategoryFoods")
                         .WithMany("Foods")
                         .HasForeignKey("CategoryFoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoryFood");
+                    b.Navigation("CategoryFoods");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.MealList", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.DaysOfTheWeek", "DaysOfTheWeek")
-                        .WithMany("MealLists")
-                        .HasForeignKey("DaysOfTheWeekId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DAMH_LTDD.Models.User", "User")
                         .WithMany("MealLists")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("DaysOfTheWeek");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.MealListFood", b =>
                 {
-                    b.HasOne("DAMH_LTDD.Models.Food", "Food")
+                    b.HasOne("DAMH_LTDD.Models.Food", "Foods")
                         .WithMany("MealListFoods")
                         .HasForeignKey("FoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DAMH_LTDD.Models.MealList", "MealList")
+                    b.HasOne("DAMH_LTDD.Models.MealList", "MealLists")
                         .WithMany("MealListFoods")
                         .HasForeignKey("MealListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Food");
+                    b.Navigation("Foods");
 
-                    b.Navigation("MealList");
+                    b.Navigation("MealLists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -637,19 +576,12 @@ namespace DAMH_LTDD.Migrations
 
             modelBuilder.Entity("DAMH_LTDD.Models.CategoryExercise", b =>
                 {
-                    b.Navigation("Exercise");
+                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.CategoryFood", b =>
                 {
                     b.Navigation("Foods");
-                });
-
-            modelBuilder.Entity("DAMH_LTDD.Models.DaysOfTheWeek", b =>
-                {
-                    b.Navigation("ExerciseLists");
-
-                    b.Navigation("MealLists");
                 });
 
             modelBuilder.Entity("DAMH_LTDD.Models.Exercise", b =>

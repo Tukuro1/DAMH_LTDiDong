@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
         public bool sex { get; set; }
-        public DateTime Date_of_birth { get; set; }
-        public int? Height { get; set; }
-        public float? Weight { get; set; }
+        public int age { get; set; } // tuổi
+        public int Height { get; set; }
+        public float Weight { get; set; }
 
     }
 }
