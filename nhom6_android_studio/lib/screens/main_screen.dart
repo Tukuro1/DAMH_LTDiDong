@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nhom6_android_studio/screens/exerciselist_screen.dart';
 import 'package:nhom6_android_studio/screens/login_screen.dart';
+import 'package:nhom6_android_studio/screens/meallist_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatelessWidget {
@@ -26,6 +28,36 @@ class MainScreen extends StatelessWidget {
                   fontSize: 24,
                 ),
               ),
+            ),
+            ListTile(
+              leading: Icon(Icons.featured_play_list),
+              title: Text('Xây dựng bài tập'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExerciseListScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.featured_play_list),
+              title: Text('Xây dựng thực đơn'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MealListPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.featured_play_list),
+              title: Text('Màn hình chính'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainScreen()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.logout),
