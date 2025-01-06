@@ -22,6 +22,8 @@ builder.Services.AddScoped<IMealListRepository, MealListRepository>();
 builder.Services.AddScoped<IExerciseListRepository, ExerciseListRepository>();
 builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
+builder.Services.AddScoped<IMealListFoodRepository, MealListFoodRepository>();
+builder.Services.AddScoped<IExerciseListExerciseRepository, ExerciseListExerciseRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
