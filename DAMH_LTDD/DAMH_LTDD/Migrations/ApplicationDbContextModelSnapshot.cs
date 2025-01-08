@@ -23,31 +23,6 @@ namespace DAMH_LTDD.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("DAMH_LTDD.Models.BodyData", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Height")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Weight")
-                        .HasColumnType("real");
-
-                    b.Property<int>("age")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("sex")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BodyDatas", "identity");
-                });
-
             modelBuilder.Entity("DAMH_LTDD.Models.CategoryExercise", b =>
                 {
                     b.Property<int>("Id")
