@@ -12,6 +12,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
@@ -20,7 +21,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     // Kiểm tra các trường nhập liệu
     if (_usernameController.text.isEmpty ||
         _emailController.text.isEmpty ||
-        _passwordController.text.isEmpty) {
+        _passwordController.text.isEmpty ||
+        _phoneNumberController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng nhập đầy đủ thông tin'),
@@ -37,6 +39,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       username: _usernameController.text,
       email: _emailController.text,
       password: _passwordController.text,
+      phoneNumber: _phoneNumberController.text,
     );
 
     setState(() => _isLoading = false);
@@ -143,6 +146,24 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: () {
                         setState(() => _obscurePassword = !_obscurePassword);
                       },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                TextField(
+                  controller: _phoneNumberController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Số điện thoại',
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                 ),

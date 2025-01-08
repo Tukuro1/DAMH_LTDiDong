@@ -18,6 +18,7 @@ class Auth {
         required String username,
         required String email,
         required String password,
+        required String phoneNumber,
         String role = 'User', // Thiết lập giá trị mặc định cho role
   }) async {
     // Tạo body để gửi lên API
@@ -26,7 +27,7 @@ class Auth {
       "email": email,
       "password": password,
       "role": role,
-
+      "phoneNumber" : phoneNumber,
 
     };
 
