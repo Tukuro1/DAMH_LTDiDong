@@ -15,7 +15,7 @@ namespace DAMH_LTDD.Models
         public DbSet<CategoryExercise> CategoryExercises { get; set; }
         public DbSet<MealListFood> MealListFoods { get; set; }
         public DbSet<ExerciseListExercise> ExerciseListExercises { get; set; }
-
+        public DbSet<BodyData> BodyDatas { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
