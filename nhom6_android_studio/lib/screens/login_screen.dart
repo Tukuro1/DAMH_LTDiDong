@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:nhom6_android_studio/screens/admin_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
 import 'package:nhom6_android_studio/utils/auth.dart';
@@ -28,13 +29,23 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _checkToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwt_token');
-
+    Map<String, dynamic>? result = JwtDecoder.decode(token!);
+    String role = result?['role'] ?? 'User'; // Nếu không có, mặc định là 'User'
+    print('resultLogin: $result');
+    print('roleLogin: $role');
     if (token != null) {
-      // Nếu token tồn tại, chuyển hướng đến MainScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
+      // Nếu token tồn tại, kiểm tra role
+      if(role == 'Admin'){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminScreen()),
+        );
+      }else{
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
+      }
     }
   }
 

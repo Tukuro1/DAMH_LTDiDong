@@ -80,6 +80,14 @@ namespace DAMH_LTDD.Controllers
             var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName), // Claim tên người dùng
+                    new Claim("UserId", user.Id), // Thêm ID người dùng vào token
+                    new Claim("Email", user.Email),
+                    new Claim("PassWord", user.PasswordHash),
+                    new Claim("Height", user.Height?.ToString() ?? "null"), // Chiều cao
+                    new Claim("Weight", user.Weight?.ToString() ?? "null"), // Cân nặng
+                    new Claim("DateOfBirth", user.Date_of_birth?.ToString("yyyy-MM-dd") ?? "null"), // Ngày sinh
+                    new Claim("Sex", user.Sex.HasValue ? (user.Sex.Value ? "Female" : "Male") : "null"), // Giới tính
+                    new Claim("Demand", user.Demand.HasValue ? (user.Demand.Value ? "GainWeight" : "LoseWeight") : "null"), // Nhu cầu
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Claim ID token (unique)
                 };
 
