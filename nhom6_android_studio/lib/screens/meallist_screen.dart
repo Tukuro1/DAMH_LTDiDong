@@ -2,52 +2,57 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class MealList {
-  final int id;
-  final String name;
-  final String description;
-
-
-  MealList({
+class MeallistPost {
+  MeallistPost({
     required this.id,
     required this.name,
     required this.description,
+    required this.mealTime,
+    required this.userId,
   });
 
-  factory MealList.fromJson(Map<String, dynamic> json) {
-    return MealList(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
+  final int? id;
+  final String? name;
+  final String? description;
+  final DateTime? mealTime;
+  final String? userId;
+
+  factory MeallistPost.fromJson(Map<String, dynamic> json) {
+    return MeallistPost(
+      id: json["id"],
+      name: json["name"],
+      description: json["description"],
+      mealTime: DateTime.tryParse(json["mealTime"] ?? ""),
+      userId: json["userId"],
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "description": description,
+    "mealTime": mealTime?.toIso8601String(),
+    "userId": userId,
+  };
 }
 
 class ApiService {
-  final String baseUrl = "https://littleblueroof28.conveyor.cloud/api/MealListApi";
+  final String baseUrl = "https://localhost:7289/api/MealListApi";
 
   // Lấy danh sách các món ăn
-  Future<List<MealList>> getMealList() async {
+  Future<List<MeallistPost>> getMealList() async {
     final response = await http.get(Uri.parse('$baseUrl'));
 
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      return data.map((item) => MealList.fromJson(item)).toList();
+      return data.map((item) => MeallistPost.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load meal list');
     }
   }
 
   // Thêm món ăn vào cơ sở dữ liệu
-  Future<bool> addMeal(MealList meal) async {
+  Future<bool> addMeal(MeallistPost meal) async {
     final response = await http.post(
       Uri.parse('$baseUrl'),
       headers: {'Content-Type': 'application/json'},
@@ -62,13 +67,16 @@ class ApiService {
   }
 }
 
-class MealListPage extends StatefulWidget {
+class MealListScreen extends StatefulWidget {
+  const MealListScreen({super.key});
+
   @override
-  _MealListPageState createState() => _MealListPageState();
+  _MealListScreenState createState() => _MealListScreenState();
 }
 
-class _MealListPageState extends State<MealListPage> {
-  late Future<List<MealList>> futureMealList;
+class _MealListScreenState extends State<MealListScreen> {
+  late Future<List<MeallistPost>> futureMealList;
+  final String apiUrl = "https://localhost:7289/api/MealListApi";
 
   @override
   void initState() {
@@ -76,71 +84,80 @@ class _MealListPageState extends State<MealListPage> {
     futureMealList = ApiService().getMealList();
   }
 
+  Future<void> refreshList() async {
+    setState(() {
+      futureMealList = ApiService().getMealList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meal List'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              // Điều hướng đến màn hình thêm món ăn mới
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddMealPage()),
-              );
-            },
-          ),
-        ],
+        title: const Text("Meal List"),
       ),
-      body: FutureBuilder<List<MealList>>(
+      body: FutureBuilder<List<MeallistPost>>(
         future: futureMealList,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(child: Text("Error: ${snapshot.error}"));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No meals found.'));
-          } else {
-            List<MealList> meals = snapshot.data!;
-            return ListView.builder(
-              itemCount: meals.length,
+            return const Center(child: Text("No meals found"));
+          }
+
+          final mealList = snapshot.data!;
+          return RefreshIndicator(
+            onRefresh: refreshList,
+            child: ListView.builder(
+              itemCount: mealList.length,
               itemBuilder: (context, index) {
-                final meal = meals[index];
+                final meal = mealList[index];
                 return ListTile(
-                  title: Text(meal.name),
-                  subtitle: Text(meal.description),
+                  title: Text(meal.name ?? "No Name"),
+                  subtitle: Text(meal.description ?? "No Description"),
+                  trailing: const Icon(Icons.arrow_forward),
                   onTap: () {
-                    // Khi nhấn vào món ăn, điều hướng đến màn hình chi tiết
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MealDetailPage(meal: meal),
+                        builder: (context) => MealDetailScreen(meal: meal),
                       ),
                     );
                   },
                 );
               },
-            );
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddMealPage()),
+          );
+          if (result == true) {
+            refreshList();
           }
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
-class MealDetailPage extends StatelessWidget {
-  final MealList meal;
+class MealDetailScreen extends StatelessWidget {
+  final MeallistPost meal;
 
-  MealDetailPage({required this.meal});
+  const MealDetailScreen({Key? key, required this.meal}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(meal.name),
+        title: Text(meal.name ?? "Meal Detail"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -148,20 +165,19 @@ class MealDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              meal.name,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              meal.name ?? "No Name",
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               'Description:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
-              meal.description,
-              style: TextStyle(fontSize: 16),
+              meal.description ?? "No Description",
+              style: const TextStyle(fontSize: 16),
             ),
-            // Bạn có thể thêm các thông tin chi tiết khác ở đây nếu có
           ],
         ),
       ),
@@ -177,30 +193,35 @@ class AddMealPage extends StatefulWidget {
 class _AddMealPageState extends State<AddMealPage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-
+  
   final ApiService _apiService = ApiService();
 
-  // Hàm lưu món ăn mới vào cơ sở dữ liệu
   void _saveMeal() async {
     final name = _nameController.text;
     final description = _descriptionController.text;
 
     if (name.isEmpty || description.isEmpty) {
-      // Kiểm tra nếu tên hoặc mô tả bị trống
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please enter both name and description')),
       );
       return;
     }
 
-    final meal = MealList(id: 0, name: name, description: description); // id sẽ tự động sinh trong cơ sở dữ liệu
+    final meal = MeallistPost(
+      id: 0,
+      name: name,
+      description: description,
+      mealTime: DateTime.now(),
+      userId: '', // Replace with actual user ID
+    );
+
     try {
       final success = await _apiService.addMeal(meal);
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Meal added successfully')),
         );
-        Navigator.pop(context); // Quay lại trang trước (MealListPage)
+        Navigator.pop(context, true); // Return to the previous screen
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -213,7 +234,7 @@ class _AddMealPageState extends State<AddMealPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Meal'),
+        title: const Text('Add New Meal'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -222,16 +243,17 @@ class _AddMealPageState extends State<AddMealPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Meal Name'),
+              decoration: const InputDecoration(labelText: 'Meal Name'),
             ),
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Meal Description'),
+              decoration: const InputDecoration(labelText: 'Meal Description'),
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _saveMeal,
-              child: Text('Save Meal'),
+              child: const Text('Save Meal'),
             ),
           ],
         ),
