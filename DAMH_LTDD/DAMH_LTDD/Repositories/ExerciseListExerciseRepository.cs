@@ -36,7 +36,8 @@ namespace DAMH_LTDD.Repositories
         // Xóa ExerciseListExercise theo ExerciseListId và ExerciseId
         public async Task DeleteExerciseListExerciseAsync(int exerciseListId, int exerciseId)
         {
-            var exerciseListExercise = await _context.ExerciseListExercises.FirstOrDefaultAsync(ele => ele.ExerciseListId == exerciseId && ele.ExerciseId == exerciseId);
+            var exerciseListExercise = await _context.ExerciseListExercises
+                .FirstOrDefaultAsync(ele => ele.ExerciseListId == exerciseListId && ele.ExerciseId == exerciseId);
             if (exerciseListExercise != null)
             {
                 _context.ExerciseListExercises.Remove(exerciseListExercise);
