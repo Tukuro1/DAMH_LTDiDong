@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using DAMH_LTDD.DTOs;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAMH_LTDD.Controllers
 {
@@ -42,6 +45,8 @@ namespace DAMH_LTDD.Controllers
                 UserName = model.Username,
                 Email = model.Email,
                 PhoneNumber = model.PhoneNumber,
+                Date_of_birth = model.Date_of_birth,
+                Sex = model.Sex,
             };
 
             // Tạo người dùng với mật khẩu
@@ -86,8 +91,8 @@ namespace DAMH_LTDD.Controllers
                     new Claim("Height", user.Height?.ToString() ?? "null"), // Chiều cao
                     new Claim("Weight", user.Weight?.ToString() ?? "null"), // Cân nặng
                     new Claim("DateOfBirth", user.Date_of_birth?.ToString("yyyy-MM-dd") ?? "null"), // Ngày sinh
-                    new Claim("Sex", user.Sex.HasValue ? (user.Sex.Value ? "Female" : "Male") : "null"), // Giới tính
-                    new Claim("Demand", user.Demand.HasValue ? (user.Demand.Value ? "GainWeight" : "LoseWeight") : "null"), // Nhu cầu
+                    new Claim("Sex", user.Sex.HasValue ? (user.Sex.Value ? "0" : "1") : "null"), // Giới tính
+                    new Claim("Demand", user.Demand.HasValue ? (user.Demand.Value ? "0" : "1") : "null"), // Nhu cầu
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // Claim ID token (unique)
                 };
 
@@ -125,6 +130,47 @@ namespace DAMH_LTDD.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor); // Sinh token
             return tokenHandler.WriteToken(token); // Trả về token dưới dạng chuỗi
         }
+        [HttpPut("update-info")] // Định nghĩa endpoint PUT để cập nhật thông tin người dùng
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UpdateUserInfoDto updateUserInfoDto)
+        {
+            try
+            {
+                // Tìm người dùng trong cơ sở dữ liệu dựa trên thông tin từ DTO (Username hoặc Email)
+                var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == updateUserInfoDto.UserName || u.Email == updateUserInfoDto.Email);
 
+                if (user == null)
+                {
+                    return NotFound(new { Status = false, Message = "Người dùng không tồn tại." });
+                }
+
+                // In ra userId được tìm thấy trong DB
+                Console.WriteLine($"UserId từ cơ sở dữ liệu: {user.Id}");
+
+                // So sánh userId từ DTO với userId trong DB (nếu cần)
+                if (updateUserInfoDto.UserId != null && updateUserInfoDto.UserId != user.Id)
+                {
+                    return Unauthorized(new { Status = false, Message = "UserId không khớp. Không thể cập nhật thông tin." });
+                }
+
+                // Cập nhật thông tin
+                user.Height = updateUserInfoDto.Height;
+                user.Weight = updateUserInfoDto.Weight;
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    return Ok(new { Status = true, Message = "Cập nhật thông tin thành công." });
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Status = false, Message = "Cập nhật thông tin không thành công." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Status = false, Message = "Lỗi máy chủ: " + ex.Message });
+            }
+        }
     }
 }
