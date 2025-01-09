@@ -42,16 +42,6 @@ class MainScreen extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.featured_play_list),
-              title: Text('Xây dựng thực đơn'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MealListPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.featured_play_list),
               title: Text('Màn hình chính'),
               onTap: () {
                 Navigator.push(
@@ -73,7 +63,8 @@ class MainScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UpdateUserInfoScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => UpdateUserInfoScreen()),
                 );
               },
             ),

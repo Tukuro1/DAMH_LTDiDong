@@ -38,7 +38,7 @@ class ExerciselistexerciseScreen extends StatelessWidget {
             child: ListTile(
               leading: exercise.img != null
                   ? Image.network(exercise.img!, width: 50, height: 50, fit: BoxFit.cover)
-                  : Icon(Icons.fitness_center),
+                  : const Icon(Icons.fitness_center),
               title: Text(exercise.name ?? "Unnamed Exercise"),
               subtitle: Text(exercise.description ?? "No description available."),
               trailing: ElevatedButton(
@@ -46,7 +46,7 @@ class ExerciselistexerciseScreen extends StatelessWidget {
                   // Logic to add the exercise to the Exercise List
                   // e.g., make an API call to associate the exercise with the list
                 },
-                child: Text("Add"),
+                child: const Text("Add"),
               ),
             ),
           );

@@ -49,37 +49,37 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-        itemCount: exercises.length,
-        itemBuilder: (context, index) {
-          final exercise = exercises[index];
-          return Card(
-            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            child: ListTile(
-              leading: exercise.img != null
-                  ? Image.network(
-                exercise.img!,
-                width: 50,
-                height: 50,
-                fit: BoxFit.cover,
-              )
-                  : Icon(Icons.fitness_center),
-              title: Text(exercise.name ?? "Unnamed Exercise"),
-              subtitle:
-              Text(exercise.description ?? "No description available."),
-              onTap: () {
-                // Navigate to a detailed screen if needed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        ExerciseDetailScreen(exercise: exercise),
+              itemCount: exercises.length,
+              itemBuilder: (context, index) {
+                final exercise = exercises[index];
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: ListTile(
+                    leading: exercise.img != null
+                        ? Image.network(
+                            exercise.img!,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                        : Icon(Icons.fitness_center),
+                    title: Text(exercise.name ?? "Unnamed Exercise"),
+                    subtitle: Text(
+                        exercise.description ?? "No description available."),
+                    onTap: () {
+                      // Navigate to a detailed screen if needed
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ExerciseDetailScreen(exercise: exercise),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
             ),
-          );
-        },
-      ),
     );
   }
 }
@@ -109,10 +109,7 @@ class ExerciseDetailScreen extends StatelessWidget {
                 // Hiển thị icon thay thế nếu không tải được ảnh
                 return Icon(Icons.image_not_supported, size: 50);
               },
-            )
-
-            ,
-
+            ),
             SizedBox(height: 16),
             Text(
               exercise.name ?? "Unnamed Exercise",
@@ -121,7 +118,8 @@ class ExerciseDetailScreen extends StatelessWidget {
             SizedBox(height: 8),
             Text(exercise.description ?? "No description available."),
             SizedBox(height: 8),
-            Text("Instructions: ${exercise.instruct ?? "No instructions provided."}"),
+            Text(
+                "Instructions: ${exercise.instruct ?? "No instructions provided."}"),
             SizedBox(height: 8),
             Text("Time: ${exercise.timeOnly ?? "N/A"}"),
             SizedBox(height: 8),
