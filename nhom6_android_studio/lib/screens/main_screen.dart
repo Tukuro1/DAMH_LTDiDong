@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nhom6_android_studio/screens/exerciselist_screen.dart';
 import 'package:nhom6_android_studio/screens/login_screen.dart';
 import 'package:nhom6_android_studio/screens/meallist_screen.dart';
+import 'package:nhom6_android_studio/screens/update_user_info_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatelessWidget {
@@ -64,6 +65,16 @@ class MainScreen extends StatelessWidget {
               title: Text('Đăng Xuất'),
               onTap: () {
                 _showLogoutDialog(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.featured_play_list),
+              title: Text('UserUpdateInfo'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateUserInfoScreen()),
+                );
               },
             ),
           ],
