@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';// Import the intl package
 import 'package:nhom6_android_studio/utils/auth.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -13,7 +13,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-
+  final TextEditingController _ageController = TextEditingController();
+  bool _sexController = true;
   bool _isLoading = false;
   bool _obscurePassword = true;
 
@@ -22,7 +23,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     if (_usernameController.text.isEmpty ||
         _emailController.text.isEmpty ||
         _passwordController.text.isEmpty ||
-        _phoneNumberController.text.isEmpty) {
+        _phoneNumberController.text.isEmpty ||
+        _ageController.text.isEmpty ||
+        _sexController == null
+    ) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Vui lòng nhập đầy đủ thông tin'),
@@ -34,12 +38,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     setState(() => _isLoading = true);
 
+    // Ensure that age is an integer
+    int? Age = int.tryParse(_ageController.text);
+    if (Age == null || Age <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Vui lòng nhập độ tuổi hợp lệ'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      setState(() => _isLoading = false);
+      return;
+    }
+
     // Gọi phương thức register từ Auth class
     Map<String, dynamic> result = await Auth.register(
       username: _usernameController.text,
       email: _emailController.text,
       password: _passwordController.text,
       phoneNumber: _phoneNumberController.text,
+      age: Age,
+      sex: _sexController
     );
 
     setState(() => _isLoading = false);
@@ -83,7 +102,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue[700],
+                    color: Colors.greenAccent[700],
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -155,6 +174,56 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Số điện thoại',
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _ageController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Độ tuổi',
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<bool>(
+                  value: _sexController,
+                  items: [
+                    DropdownMenuItem<bool>(
+                      value: true,
+                      child: Text('Nam'),
+                    ),
+                    DropdownMenuItem<bool>(
+                      value: false,
+                      child: Text('Nữ'),
+                    ),
+                  ],
+                  onChanged: (bool? newValue) {
+                    setState(() {
+                      _sexController = newValue!;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Chọn giới tính',
                     filled: true,
                     fillColor: Colors.grey[100],
                     border: OutlineInputBorder(

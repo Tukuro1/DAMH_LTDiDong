@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:nhom6_android_studio/screens/admin_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
 import 'package:nhom6_android_studio/utils/auth.dart';
 import 'package:nhom6_android_studio/screens/main_screen.dart';
 import 'package:nhom6_android_studio/screens/registration_screen.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,10 +21,31 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
     super.initState();
     _checkToken(); // Kiểm tra token khi mở màn hình
+    _initializeNotifications(); // Khởi tạo thông báo
+  }
+
+// Hàm khởi tạo thông báo
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+    AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    const InitializationSettings initializationSettings =
+    InitializationSettings(android: initializationSettingsAndroid);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    // Yêu cầu quyền thông báo
+    final PermissionStatus status = await Permission.notification.request();
+    if (status != PermissionStatus.granted) {
+      print('Quyền thông báo bị từ chối');
+    }
   }
 
   // Kiểm tra token trong SharedPreferences
@@ -77,22 +100,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
       String role = result['role'] ?? 'User'; // Lấy vai trò người dùng
 
+      // Hiển thị thông báo
+      await flutterLocalNotificationsPlugin.show(
+        0, // ID của thông báo
+        'Đăng nhập thành công', // Tiêu đề thông báo
+        'Xin chào ${_usernameController.text}, bạn đã đăng nhập thành công!', // Nội dung thông báo
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'login_channel', // ID của kênh
+            'Đăng nhập', // Tên kênh
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+        ),
+      );
+
       if (role == 'Admin') {
         Navigator.pushReplacement(
           context,
-          //Nếu người dùng là admin thì chuyển đến trang admin
           MaterialPageRoute(builder: (context) => const AdminScreen()),
         );
       } else {
         Navigator.pushReplacement(
           context,
-          //nếu không phải là admin thì chuyển đến trang MainScreen
           MaterialPageRoute(builder: (context) => const MainScreen()),
         );
-        //có thể xử lý thêm nếu không phải loại người dùng nào thì chuyển đến trang lỗi
       }
     } else {
-      // Hiển thị thông báo lỗi
       String errorMessage = result['message'] ?? 'Tên đăng nhập hoặc mật khẩu không đúng';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -102,6 +136,8 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -115,12 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 60),
                 Text(
-                  'facebook',
+                  'Hutech Y Tế',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue[700],
+                    color: Colors.greenAccent[700],
                   ),
                 ),
                 const SizedBox(height: 40),

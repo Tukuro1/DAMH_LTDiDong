@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
+
+import 'package:flutter/material.dart';
 
 import '../services/api_client.dart';
 import '../services/auth_service.dart';
@@ -19,17 +22,20 @@ class Auth {
     required String email,
     required String password,
     required String phoneNumber,
-
+    required int age,
+    required bool sex,
     String role = 'User', // Thiết lập giá trị mặc định cho role
   }) async {
     // Tạo body để gửi lên API
+
     Map<String, dynamic> body = {
       "username": username,
       "email": email,
       "password": password,
-      "role": role,
       "phoneNumber" : phoneNumber,
-
+      "age" : age,
+      "sex" : sex,
+      "role": role,
     };
 
     // Gọi API đăng ký thông qua ApiClient
